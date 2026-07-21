@@ -13,7 +13,7 @@ import asyncio
 import logging
 
 from pymodbus.datastore import(
-        ModbusDeviceContext,
+        ModbusSlaveContext,
         ModbusServerContext,
         ModbusSequentialDataBlock,
 )
@@ -35,14 +35,14 @@ def build_context() -> ModbusServerContext:
     discrete_inputs = ModbusSequentialDataBlock(1, [0] * 10)
     input_regs = ModbusSequentialDataBlock(1, [0] * 10)
 
-    device = ModbusDeviceContext(
+    slave = ModbusSlaveContext(
             di = discrete_inputs,
             co = coils,
             ir = input_regs,
             hr = holding_regs,
     )
 
-    return ModbusServerContext(devices=device, single=True)
+    return ModbusServerContext(slaves=slave, single=True)
 
 async def simulate_temperature(context: ModbusServerContext) -> None: 
     '''
@@ -56,7 +56,7 @@ async def simulate_temperature(context: ModbusServerContext) -> None:
         value += direction * 2 
         if value > 260 or value < 180:
             direction *= -1
-        await context.async_setValues(0,3,1,[value])
+        context[0].async_setValues(3,1,[value])
         # device_id = 0, func_cdoe = 3, address = 1, value = new temp
         log.info("node1: simulated_temp register -> %s (%.1f C)", value, value / 10)
 
