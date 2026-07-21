@@ -27,20 +27,20 @@ def main() -> None:
             print(f"simulated_temp = {raw / 10:.1f} C (raw={raw})")
 
         # Write a new setpoint (holding register 0) 
-        write_result = client.write_register(address-0, value=225) #22.5 C
+        write_result = client.write_register(address=0, value=225) #22.5 C
 
         if write_result.isError():
-            print(f"Write failed, ", write_result)
+            print("Write failed, ", write_result)
         else: 
             print("Setpoint written: 225 (22.5 C)")
 
         # Confirm the write by reading it back
-        confirm  = client.read_holding_register(address=0, count=1)
+        confirm  = client.read_holding_registers(address=0, count=1)
         print("Setpoint readback: ", confirm.registers[0])
 
         # Toggle pump_enable coil ON 
         coil_result = client.write_coil(address=0, value=True)
-        if coild_result.isError():
+        if coil_result.isError():
             print(f"Coil Write failed: ", coil_result)
         else:
             print("pump_enable -> ON")
